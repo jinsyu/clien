@@ -23,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         if let button = statusItem.button {
 //            button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
-            button.title = "CLIEN"
+            button.title = "C"
             button.action = #selector(togglePopover(_:))
         }
         
@@ -34,6 +34,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
                 strongSelf.closePopover(sender: event)
             }
         })
+        
+        showPopover(sender: self)
     }
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application

@@ -28,10 +28,14 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     @IBOutlet weak var idTextField: NSTextField!
     @IBOutlet weak var passwordTextField: NSSecureTextField!
     @IBOutlet weak var launchAtLoginButton: NSButton!
+    @IBOutlet weak var autoLoginButton: NSButton!
     @IBOutlet weak var loginButton: NSButton!
     @IBOutlet weak var logoutButton: NSButton!
+    @IBOutlet weak var notiTimeTextField: NSTextField!
+    @IBOutlet weak var notiTimeStepper: NSStepper!
     
     var timer: Timer?
+    var LOOP_TIME: Double?
     
     @IBAction func passwordEnterPressed(_ sender: Any) {
         getAlarmList()
@@ -54,9 +58,40 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
             passwordTextField.stringValue = password
         }
         
+        let notiTime = UserDefaults.standard.double(forKey: "notiTime")
+        if notiTime != 0.0 {
+            notiTimeTextField.stringValue = "\(Int(notiTime))분 마다 알림"
+            notiTimeStepper.integerValue = Int(notiTime)
+            LOOP_TIME = Double(notiTime)
+        } else {
+            notiTimeTextField.stringValue = "5분 마다 알림"
+            LOOP_TIME = 5.0
+        }
+        
+        let autoLogin = UserDefaults.standard.bool(forKey: "autoLogin")
+        autoLoginButton.state = NSControl.StateValue.init(autoLogin ? 1 : 0)
+        
+        if autoLogin && idTextField.stringValue != "" && passwordTextField.stringValue != "" {
+            getAlarmList()
+        }
+        
+        notiTimeStepper.action = #selector(onNotiTimeStepperChanged(_:))
+        
+        autoLoginButton.action = #selector(onAutoLoginButtonClicked(_:))
+        
         logoutButton.isEnabled = false
         
         // Do any additional setup after loading the view.
+    }
+    
+    @objc func onNotiTimeStepperChanged(_ sender: NSStepper) {
+        LOOP_TIME = Double(sender.integerValue)
+        notiTimeTextField.stringValue = "\(String(describing: sender.integerValue))분 마다 알림"
+        UserDefaults.standard.set(LOOP_TIME, forKey: "notiTime")
+    }
+    
+    @objc func onAutoLoginButtonClicked(_ sender: NSButton) {
+        UserDefaults.standard.set(autoLoginButton.state.rawValue == 1 ? true : false, forKey: "autoLogin")
     }
     
     override var representedObject: Any? {
@@ -76,8 +111,11 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     @IBAction func logoutButtonClicked(_ sender: Any) {
         self.idTextField.isEnabled = true
         self.passwordTextField.isEnabled = true
+        self.launchAtLoginButton.isEnabled = true
+        self.autoLoginButton.isEnabled = true
         self.loginButton.isEnabled = true
         self.logoutButton.isEnabled = false
+        
         
         timer?.invalidate()
         
@@ -166,27 +204,37 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                         if isLoggedIn {
                             self.idTextField.isEnabled = false
                             self.passwordTextField.isEnabled = false
+                            self.launchAtLoginButton.isEnabled = false
+                            self.autoLoginButton.isEnabled = false
                             self.loginButton.isEnabled = false
                             self.logoutButton.isEnabled = true
                             
                             UserDefaults.standard.set(self.idTextField.stringValue, forKey: "id")
                             UserDefaults.standard.set(self.passwordTextField.stringValue, forKey: "password")
                             
-                            self.timer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { (timer) in
+                            self.timer = Timer.scheduledTimer(withTimeInterval: self.LOOP_TIME!*60, repeats: true, block: { (timer) in
                                 
                                 AF.request("https://www.clien.net/service/getAlarmList", method: .get).responseString { (response) in
                                     do {
                                         let messageDoc: Document = try SwiftSoup.parse(response.value!)
                                         let messages: Elements = try messageDoc.select(".list_item")
                                         for message in messages {
-                                            let nickname = try message.select(".nickname").text()
-                                            let contents = try message.select(".list_contents").text()
-                                            let timestamp = try message.select(".timestamp").text()
-                                            self.showNotification(title: contents, subtitle: contents)
-                                            print(nickname, contents, timestamp)
+                                            
+                                            var nickname = try message.select(".nickname").text()
+                                            if nickname == "" {
+                                                nickname = try message.select(".nickname").select("img").attr("alt")
+                                            }
 
+                                            let contents = try message.select(".list_contents").text()
+                                            if contents == "관리자 알림 확인하기" {
+                                                continue
+                                            }
+                                            
+                                            let timestamp = try message.select(".timestamp").text()
+                                            self.showNotification(title: "clien", subtitle: "contents")
+                                            print(nickname, contents, timestamp)
                                         }
-                                
+                                        
                                     } catch Exception.Error(let type, let message){
                                         print(type, message)
                                     } catch {
@@ -195,6 +243,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                     
                                 }
                             })
+                            self.timer?.fire()
                         } else {
                             print("can't log in")
                         }
