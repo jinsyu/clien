@@ -44,6 +44,8 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        UserDefaults.standard.removeObject(forKey: "notiTime")
+        
         UNUserNotificationCenter.current().requestAuthorization(options: .badge) { (granted, error) in
             if error != nil {
                 
@@ -65,6 +67,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
             LOOP_TIME = Double(notiTime)
         } else {
             notiTimeTextField.stringValue = "5분 마다 알림"
+            notiTimeStepper.integerValue = 5
             LOOP_TIME = 5.0
         }
         
@@ -111,6 +114,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     @IBAction func logoutButtonClicked(_ sender: Any) {
         self.idTextField.isEnabled = true
         self.passwordTextField.isEnabled = true
+        self.notiTimeStepper.isEnabled = true
         self.launchAtLoginButton.isEnabled = true
         self.autoLoginButton.isEnabled = true
         self.loginButton.isEnabled = true
@@ -213,6 +217,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                         if isLoggedIn {
                             self.idTextField.isEnabled = false
                             self.passwordTextField.isEnabled = false
+                            self.notiTimeStepper.isEnabled = false
                             self.launchAtLoginButton.isEnabled = false
                             self.autoLoginButton.isEnabled = false
                             self.loginButton.isEnabled = false
