@@ -170,6 +170,15 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         }
     }
     
+    func getParams(paramsRaw: String) -> Array<Substring> {
+        var paramsRaw = paramsRaw.replacingOccurrences(of: "app.commentAlarmLink(", with: "")
+        paramsRaw = paramsRaw.replacingOccurrences(of: "'", with: "")
+        paramsRaw = paramsRaw.replacingOccurrences(of: " ", with: "")
+        paramsRaw = paramsRaw.replacingOccurrences(of: ")", with: "")
+        let params = paramsRaw.split(separator: ",")
+        return params
+    }
+    
     @objc func getAlarmList() {
         if loginButton.title == "로그아웃" {
             
@@ -213,11 +222,42 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                             UserDefaults.standard.set(self.passwordTextField.stringValue, forKey: "password")
                             
                             self.timer = Timer.scheduledTimer(withTimeInterval: self.LOOP_TIME!*60, repeats: true, block: { (timer) in
-                                
+                                // get alarm list
                                 AF.request("https://www.clien.net/service/getAlarmList", method: .get).responseString { (response) in
                                     do {
                                         let messageDoc: Document = try SwiftSoup.parse(response.value!)
-                                        let messages: Elements = try messageDoc.select(".list_item")
+                                        let messages: Elements = try messageDoc.select("div.list_item.unread")
+                                        for message in messages {
+                                            
+                                            var nickname = try message.select(".nickname").text()
+                                            if nickname == "" {
+                                                nickname = try message.select(".nickname").select("img").attr("alt")
+                                            }
+
+                                            let contents = try message.select(".list_contents").text()
+                                            if contents == "관리자 알림 확인하기" {
+                                                continue
+                                            }
+                                            let paramsRaw = try message.select(".list_contents").attr("onclick")
+                                            let params = self.getParams(paramsRaw: paramsRaw)
+                        
+                                            let timestamp = try message.select(".timestamp").text()
+                                            self.showNotification(title: "clien", subtitle: "contents")
+                                            print("replies", nickname, contents, timestamp, params)
+                                        }
+                                        
+                                    } catch Exception.Error(let type, let message){
+                                        print(type, message)
+                                    } catch {
+                                        print("swift souping error for getting alarm list")
+                                    }
+                                }
+                                
+                                // get messages
+                                AF.request("https://www.clien.net/service/message/?type=", method: .get).responseString { (response) in
+                                    do {
+                                        let messageDoc: Document = try SwiftSoup.parse(response.value!)
+                                        let messages: Elements = try messageDoc.select("div.list_item.recieved.unread")
                                         for message in messages {
                                             
                                             var nickname = try message.select(".nickname").text()
@@ -230,17 +270,14 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                                 continue
                                             }
                                             
+                                            
                                             let timestamp = try message.select(".timestamp").text()
                                             self.showNotification(title: "clien", subtitle: "contents")
-                                            print(nickname, contents, timestamp)
+                                            print("messages", nickname, contents, timestamp)
                                         }
-                                        
-                                    } catch Exception.Error(let type, let message){
-                                        print(type, message)
                                     } catch {
-                                        print("swift souping error for getting alarm list")
+                                        print("error get messages")
                                     }
-                                    
                                 }
                             })
                             self.timer?.fire()
