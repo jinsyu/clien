@@ -9,21 +9,17 @@
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDelegate {
-    
-    func userNotificationCenter(_ center: NSUserNotificationCenter, shouldPresent notification: NSUserNotification) -> Bool {
-        return true
-    }
+class AppDelegate: NSObject, NSApplicationDelegate {
     
     var eventMonitor: EventMonitor?
 
-    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.variableLength)
+    let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
         if let button = statusItem.button {
-//            button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
-            button.title = "C"
+            button.image = NSImage(named:NSImage.Name("StatusBarButtonImage"))
+//            button.title = "C"
             button.action = #selector(togglePopover(_:))
         }
         
@@ -37,6 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSUserNotificationCenterDele
         
         showPopover(sender: self)
     }
+
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }

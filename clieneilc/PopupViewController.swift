@@ -37,20 +37,17 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     var timer: Timer?
     var LOOP_TIME: Double?
     
+    
     @IBAction func passwordEnterPressed(_ sender: Any) {
         getAlarmList()
     }
     
+    @IBAction func exitButtonClicked(_ sender: Any) {
+        NSApplication.shared.terminate(self)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        UserDefaults.standard.removeObject(forKey: "notiTime")
-        
-        UNUserNotificationCenter.current().requestAuthorization(options: .badge) { (granted, error) in
-            if error != nil {
-                
-            }
-        }
         
         if let id = UserDefaults.standard.string(forKey: "id") {
             idTextField.stringValue = id
@@ -120,7 +117,6 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         self.loginButton.isEnabled = true
         self.logoutButton.isEnabled = false
         
-        
         timer?.invalidate()
         
         // Get CSRF value of logout form
@@ -147,17 +143,113 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         }
     }
     
-    func showNotification(title: String, subtitle: String, soundName: String=NSUserNotificationDefaultSoundName) {
-        let notification = NSUserNotification()
-        notification.title = title
-        notification.subtitle = subtitle
-        notification.soundName = soundName
-        NSUserNotificationCenter.default.delegate = self
-        NSUserNotificationCenter.default.deliver(notification)
-    }
     
     func userNotificationCenter(_ center: NSUserNotificationCenter, shouldPresent notification: NSUserNotification) -> Bool {
         return true
+    }
+    
+    
+    func showNotification(title: String, subtitle: String, params: [Substring], csrf: String) {
+        let notification = NSUserNotification()
+        notification.hasReplyButton = true
+        notification.responsePlaceholder = "답장하기"
+        
+        notification.title = title
+        notification.subtitle = subtitle
+        notification.userInfo = ["params": params]
+        notification.soundName = NSUserNotificationDefaultSoundName
+        NSUserNotificationCenter.default.delegate = self
+        NSUserNotificationCenter.default.deliver(notification)
+        
+        AF.request("https://www.clien.net/service/board/\(params[0])/\(params[1])", method: .get).responseString { (response) in
+            if let error = response.error {
+                print("read article error when notification", error)
+                return
+            }
+        }
+//        API_HOST + '/alarmRead/'+alarmType+'/'+alarmSn;
+        AF.request("https://www.clien.net/service/api/alarmRead/\(params[2])/\(params[3])", method: .post, headers: ["X-CSRF-TOKEN": csrf]).responseString { (response) in
+            if let error = response.error {
+                print("alarm read error", error)
+                return
+            }
+            print("alarmread", params)
+        }
+
+    }
+    
+    func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
+        switch (notification.activationType) {
+        case .actionButtonClicked:
+            print("action button clicked")
+            break
+        case .additionalActionClicked:
+            print("additional action button clicked")
+            break
+        case .none:
+            print("none clicked")
+            break
+        case .contentsClicked:
+            print("contents clicked")
+            break
+        case .replied:
+            //["sold", "15324455", "R10", "28681294", "117237529"]
+            //bardCd, boardSn, alarmType, alarmSn, divFocus
+            let params = notification.userInfo!["params"] as! [String]
+            let boardName = params[0]
+            let boardSn = params[1]
+            let reCommentSn = params[4]
+                        
+            // get csrf
+            AF.request("https://www.clien.net/service/board/\(boardName)/\(boardSn)", method: .get).responseString { (response) in
+                guard let html = response.value else { return }
+                
+                do {
+                    let doc: Document = try SwiftSoup.parse(html)
+                    guard let logoutForm: Element = try doc.select(".form_logout").first() else {
+                        print("logoutform not fond")
+                        return
+                    }
+                    let _csrf = try logoutForm.select("input").first()!.attr("value")
+                    
+                    guard let replyString = notification.response?.string else { return }
+                    print(replyString)
+                    
+                    AF.request(
+                        "https://www.clien.net/service/api/board/\(boardName)/\(boardSn)/comment/regist/",
+                        method: .post,
+                        parameters: ["boardSn": boardSn, "param": "{\"comment\": \"\(replyString)\", \"images\": [], \"articleRegister\": \"\(notification.title!)\", \"reCommentSn\": \(reCommentSn)}"],
+                        headers: ["X-CSRF-TOKEN": _csrf]).responseString { (response) in
+                            if let error = response.error {
+                                print(error)
+                                return
+                            }
+                            print("replied")
+                    }
+                    
+                } catch {
+                    print("replying get csrf error")
+                }
+            }
+            
+            
+            
+            
+            break
+        @unknown default:
+            print("notification activated unknown")
+            break
+        }
+    }
+    
+    func showAlert(question: String, text: String) {
+        let alert = NSAlert()
+        alert.messageText = question
+        alert.informativeText = text
+        alert.icon = NSImage(named: "clien")
+        alert.alertStyle = NSAlert.Style.warning
+        alert.addButton(withTitle: "확인")
+        alert.runModal()
     }
     
     func isLoggedIn( completion: @escaping(Bool) -> ()) {
@@ -238,16 +330,17 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             if nickname == "" {
                                                 nickname = try message.select(".nickname").select("img").attr("alt")
                                             }
-
+                                            
                                             let contents = try message.select(".list_contents").text()
                                             if contents == "관리자 알림 확인하기" {
                                                 continue
                                             }
                                             let paramsRaw = try message.select(".list_contents").attr("onclick")
                                             let params = self.getParams(paramsRaw: paramsRaw)
-                        
+                                            
                                             let timestamp = try message.select(".timestamp").text()
-                                            self.showNotification(title: "clien", subtitle: "contents")
+                                            
+                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
                                             print("replies", nickname, contents, timestamp, params)
                                         }
                                         
@@ -269,15 +362,17 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             if nickname == "" {
                                                 nickname = try message.select(".nickname").select("img").attr("alt")
                                             }
-
+                                            
                                             let contents = try message.select(".list_contents").text()
                                             if contents == "관리자 알림 확인하기" {
                                                 continue
                                             }
-                                            
+                                            let paramsRaw = try message.select(".list_contents").attr("onclick")
+                                            let params = self.getParams(paramsRaw: paramsRaw)
                                             
                                             let timestamp = try message.select(".timestamp").text()
-                                            self.showNotification(title: "clien", subtitle: "contents")
+                                            
+                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
                                             print("messages", nickname, contents, timestamp)
                                         }
                                     } catch {
@@ -287,6 +382,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                             })
                             self.timer?.fire()
                         } else {
+                            self.showAlert(question: "로그인 실패", text: "아이디와 비밀번호를 다시 확인해주세요")
                             print("can't log in")
                         }
                     }

@@ -685,11 +685,11 @@
             <objects>
                 <viewController storyboardIdentifier="PopupViewController" id="XfG-lQ-9wD" customClass="PopupViewController" customModule="clieneilc" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl">
-                        <rect key="frame" x="0.0" y="0.0" width="203" height="264"/>
+                        <rect key="frame" x="0.0" y="0.0" width="203" height="297"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="bVK-hf-Smo">
-                                <rect key="frame" x="18" y="119" width="108" height="18"/>
+                                <rect key="frame" x="18" y="152" width="108" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="로그인할 때 시작" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NaK-5X-UFE">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -700,7 +700,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFs-ab-5jn">
-                                <rect key="frame" x="18" y="88" width="82" height="18"/>
+                                <rect key="frame" x="18" y="121" width="82" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="check" title="자동 로그인" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="Sfp-fd-P4c">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -711,7 +711,7 @@
                                 </connections>
                             </button>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HZN-AA-8Xu">
-                                <rect key="frame" x="20" y="223" width="163" height="21"/>
+                                <rect key="frame" x="20" y="256" width="163" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="아이디" drawsBackground="YES" id="SNk-Rx-l62">
                                     <font key="font" metaFont="system"/>
@@ -720,7 +720,7 @@
                                 </textFieldCell>
                             </textField>
                             <secureTextField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ELM-hH-o2V">
-                                <rect key="frame" x="20" y="192" width="163" height="21"/>
+                                <rect key="frame" x="20" y="225" width="163" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" placeholderString="비밀번호" drawsBackground="YES" usesSingleLineMode="YES" id="gdR-Ef-dIF">
                                     <font key="font" metaFont="system"/>
@@ -735,16 +735,16 @@
                                 </connections>
                             </secureTextField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wV3-9D-cAg">
-                                <rect key="frame" x="167" y="156" width="19" height="28"/>
+                                <rect key="frame" x="167" y="189" width="19" height="28"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" minValue="1" maxValue="60" doubleValue="1" id="Grg-8w-FgN"/>
                             </stepper>
                             <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="yBl-ZE-lJe">
-                                <rect key="frame" x="0.0" y="149" width="203" height="5"/>
+                                <rect key="frame" x="0.0" y="182" width="203" height="5"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                             </box>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qCI-Hu-HkD">
-                                <rect key="frame" x="80" y="162" width="87" height="16"/>
+                                <rect key="frame" x="80" y="195" width="87" height="16"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="5분 마다 알림" id="s5T-P2-FaJ">
                                     <font key="font" metaFont="system"/>
@@ -753,7 +753,7 @@
                                 </textFieldCell>
                             </textField>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="TTf-nc-bbY">
-                                <rect key="frame" x="14" y="13" width="175" height="32"/>
+                                <rect key="frame" x="14" y="46" width="175" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="로그아웃" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yOj-iJ-lem">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -764,7 +764,7 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ryg-05-02z">
-                                <rect key="frame" x="14" y="46" width="175" height="32"/>
+                                <rect key="frame" x="14" y="79" width="175" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <buttonCell key="cell" type="push" title="로그인" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Szw-TN-cDE">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -772,6 +772,17 @@
                                 </buttonCell>
                                 <connections>
                                     <action selector="loginButtonClicked:" target="XfG-lQ-9wD" id="Dw3-0Y-Sdp"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0Ag-6Y-Ycn">
+                                <rect key="frame" x="14" y="13" width="175" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="push" title="종료" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="gdz-r2-nxz">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="exitButtonClicked:" target="XfG-lQ-9wD" id="sbA-eD-QzB"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -789,7 +800,7 @@
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-36.5" y="243"/>
+            <point key="canvasLocation" x="-36.5" y="259.5"/>
         </scene>
     </scenes>
 </document>
