@@ -37,7 +37,6 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     var timer: Timer?
     var LOOP_TIME: Double?
     
-    
     @IBAction func passwordEnterPressed(_ sender: Any) {
         getAlarmList()
     }
@@ -161,21 +160,17 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         NSUserNotificationCenter.default.delegate = self
         NSUserNotificationCenter.default.deliver(notification)
         
-        AF.request("https://www.clien.net/service/board/\(params[0])/\(params[1])", method: .get).responseString { (response) in
-            if let error = response.error {
-                print("read article error when notification", error)
-                return
-            }
-        }
-//        API_HOST + '/alarmRead/'+alarmType+'/'+alarmSn;
-        AF.request("https://www.clien.net/service/api/alarmRead/\(params[2])/\(params[3])", method: .post, headers: ["X-CSRF-TOKEN": csrf]).responseString { (response) in
-            if let error = response.error {
-                print("alarm read error", error)
-                return
-            }
-            print("alarmread", params)
-        }
+        getCSRF { (success, _csrf) in
+            if !success { return }
 
+            AF.request("https://www.clien.net/service/api/alarmRead/\(params[2])/\(params[3])", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseString { (response) in
+                if let error = response.error {
+                    print("alarm read error", error)
+                    return
+                }
+                print("alarmread", params)
+            }
+        }
     }
     
     func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
@@ -232,9 +227,6 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                 }
             }
             
-            
-            
-            
             break
         @unknown default:
             print("notification activated unknown")
@@ -275,9 +267,60 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         return params
     }
     
+    func getCSRF(completion: @escaping (Bool, String)->Void) {
+        AF.request("https://www.clien.net", method: .get).responseString { (response) in
+            guard let html = response.value else { return }
+            do {
+                let doc: Document = try SwiftSoup.parse(html)
+                guard let logoutForm: Element = try doc.select(".form_logout").first() else {
+                    print("logoutform not found")
+                    return
+                }
+                let _csrf = try logoutForm.select("input").first()!.attr("value")
+                print(_csrf)
+                completion(true, _csrf)
+            } catch {
+                print("isloggedin error", error)
+            }
+        }
+        
+        // Get CSRF value
+//        AF.request("https://www.clien.net/service/auth/login", method: .get).responseString { (response) in
+//            if let error = response.error {
+//                print("request for getting _csrf error", error)
+//                return
+//            }
+//
+//            guard let html = response.value else { return }
+//
+//            do {
+//                let doc: Document = try SwiftSoup.parse(html)
+//                guard let loginForm: Element = try doc.select("#loginForm").first() else {
+//                    print("loginform not found")
+//                    return
+//                }
+//                let _csrf = try loginForm.select("input").first()!.attr("value")
+//                let id = self.idTextField.stringValue
+//                let password = self.passwordTextField.stringValue
+//
+//                AF.request("https://www.clien.net/service/login", method: .post, parameters: ["userId": id, "userPassword": password, "_csrf": _csrf]).responseString { (_) in
+//                    if let error = response.error {
+//                        print("login error", error)
+//                        return
+//                    }
+//
+//
+//
+//                }
+//            } catch {
+//                print("get csrf error")
+//            }
+//        }
+    }
+
+    
     @objc func getAlarmList() {
         if loginButton.title == "로그아웃" {
-            
             return
         }
         // Get CSRF value
@@ -340,8 +383,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             
                                             let timestamp = try message.select(".timestamp").text()
                                             
-                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
                                             print("replies", nickname, contents, timestamp, params)
+                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
+                                            
                                         }
                                         
                                     } catch Exception.Error(let type, let message){
@@ -372,8 +416,8 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             
                                             let timestamp = try message.select(".timestamp").text()
                                             
-                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
                                             print("messages", nickname, contents, timestamp)
+                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
                                         }
                                     } catch {
                                         print("error get messages")
