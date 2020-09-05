@@ -11,6 +11,7 @@ import SwiftSoup
 import Alamofire
 import UserNotifications
 import LaunchAtLogin
+import SwiftyJSON
 
 extension PopupViewController {
     
@@ -135,7 +136,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     func showNotification(title: String, subtitle: String, params: [Substring], csrf: String) {
         let notification = NSUserNotification()
         notification.hasReplyButton = true
-        notification.responsePlaceholder = "댓글 작성"
+        notification.responsePlaceholder = "댓글 작성(3글자 이상 입력하세요!!)"
         notification.title = title
         notification.subtitle = subtitle
         notification.userInfo = ["params": params]
@@ -191,13 +192,23 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                         "https://www.clien.net/service/api/board/\(boardName)/\(boardSn)/comment/regist/",
                         method: .post,
                         parameters: ["boardSn": boardSn, "param": "{\"comment\": \"\(replyString)\", \"images\": [], \"articleRegister\": \"\(notification.title!)\", \"reCommentSn\": \(reCommentSn)}"],
-                        headers: ["X-CSRF-TOKEN": _csrf]).responseString { (response) in
-                            if response.response?.statusCode != 200 {
-                                print("reply post error")
-                                self.showAlert(question: "댓글 작성 실패", text: "10초 간격으로 댓글을 등록할 수 있습니다. 제 탓이 아니에요. 클리앙에서 막아뒀어요. 죄송합니다.")
-                                return
+                        headers: ["X-CSRF-TOKEN": _csrf]).validate().responseJSON { (response) in
+                            
+                            switch response.result {
+                            //Remove loader here either after parsing or on error
+                            case .success(_):
+                                print("replied", replyString, params)
+                            case .failure(let error):
+                                print(error)
+                                if let responseData = response.data {
+                                    do {
+                                        let parsedResponseData = try JSON.init(data: responseData)
+                                        self.showAlert(question: "댓글 작성 실패", text: parsedResponseData["message"].stringValue)
+                                    } catch {
+                                        print("json pared error")
+                                    }
+                                }
                             }
-                            print("replied", replyString)
                     }
                     
                 } catch {
@@ -292,7 +303,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                             print("https://www.clien.net/service/login get error")
                             return
                         }
-                                                
+                        
                         AF.request("https://www.clien.net", method: .get).responseString { (response) in
                             guard let html = response.value else {
                                 print("https://www.clien.net get error")
@@ -321,7 +332,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             let messageDoc: Document = try SwiftSoup.parse(response.value!)
                                             let messages: Elements = try messageDoc.select("div.list_item.unread")
                                             // DEV
-//                                            let messages: Elements = try messageDoc.select("div.list_item")
+                                            // let messages: Elements = try messageDoc.select("div.list_item")
                                             for message in messages {
                                                 var nickname = try message.select(".nickname").text()
                                                 if nickname == "" {
@@ -361,12 +372,12 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                 }
                                 
                                 // alarm all read
-//                                AF.request("https://www.clien.net/service/api/alarmAllRead", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (response) in
-//                                    print("alarm all read", response)
-//                                }
+                                //                                AF.request("https://www.clien.net/service/api/alarmAllRead", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (response) in
+                                //                                    print("alarm all read", response)
+                                //                                }
                                 
-//                                self.logOut()
-                                                                
+                                //                                self.logOut()
+                                
                                 // get messages
                                 //                                AF.request("https://www.clien.net/service/message/?type=", method: .get).responseString { (response) in
                                 //                                    do {

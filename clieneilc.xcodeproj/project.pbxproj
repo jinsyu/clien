@@ -15,6 +15,7 @@
 		9C9FCC2E24FEBBE10080AB99 /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C9FCC2D24FEBBE10080AB99 /* PopupViewController.swift */; };
 		9C9FCC3024FEBBE20080AB99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C9FCC2F24FEBBE20080AB99 /* Assets.xcassets */; };
 		9C9FCC3324FEBBE20080AB99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C9FCC3124FEBBE20080AB99 /* Main.storyboard */; };
+		9CCE263B250419500082EACF /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCE263A250419500082EACF /* SwiftyJSON.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,7 @@
 		9C9FCC3224FEBBE20080AB99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C9FCC3424FEBBE20080AB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C9FCC3524FEBBE20080AB99 /* clieneilc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = clieneilc.entitlements; sourceTree = "<group>"; };
+		9CCE263A250419500082EACF /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage/Build/Mac/SwiftyJSON.framework; sourceTree = "<group>"; };
 		9CFB0F8B2502CE2B00592C90 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -49,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCE263B250419500082EACF /* SwiftyJSON.framework in Frameworks */,
 				9C51EC5B2503764E00AD7EA2 /* SwiftSoup.framework in Frameworks */,
 				9C51EC58250374A900AD7EA2 /* LaunchAtLogin.framework in Frameworks */,
 				9C51EC59250374A900AD7EA2 /* Alamofire.framework in Frameworks */,
@@ -68,6 +71,7 @@
 		87FE20CFBA92F8C510459AB0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CCE263A250419500082EACF /* SwiftyJSON.framework */,
 				9C51EC5A2503764E00AD7EA2 /* SwiftSoup.framework */,
 				9C51EC57250374A900AD7EA2 /* Alamofire.framework */,
 				9C51EC56250374A900AD7EA2 /* LaunchAtLogin.framework */,
@@ -187,6 +191,7 @@
 				Carthage/Build/Mac/Alamofire.framework,
 				Carthage/Build/Mac/LaunchAtLogin.framework,
 				Carthage/Build/Mac/SwiftSoup.framework,
+				Carthage/Build/Mac/SwiftyJSON.framework,
 			);
 			name = "Run Script";
 			outputFileListPaths = (
