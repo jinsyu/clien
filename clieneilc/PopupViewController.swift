@@ -71,6 +71,8 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
             LOOP_TIME = 1.0
         }
         
+        launchAtLoginButton.state = NSControl.StateValue.init(LaunchAtLogin.isEnabled ? 1 : 0)
+        
         let autoLogin = UserDefaults.standard.bool(forKey: "autoLogin")
         autoLoginButton.state = NSControl.StateValue.init(autoLogin ? 1 : 0)
         
@@ -80,6 +82,8 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         
         notiTimeStepper.action = #selector(onNotiTimeStepperChanged(_:))
         autoLoginButton.action = #selector(onAutoLoginButtonClicked(_:))
+        
+        
     }
     
     @objc func onNotiTimeStepperChanged(_ sender: NSStepper) {
@@ -322,16 +326,18 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                             UserDefaults.standard.set(self.idTextField.stringValue, forKey: "id")
                             UserDefaults.standard.set(self.passwordTextField.stringValue, forKey: "password")
                             
-                            self.timer = Timer.scheduledTimer(withTimeInterval: self.LOOP_TIME!*60, repeats: true, block: { (timer) in
+                            // DEV need to change
+                            self.timer = Timer.scheduledTimer(withTimeInterval: self.LOOP_TIME!*1, repeats: true, block: { (timer) in
                                 
-                                for n in 0...2 {
+                                // DEV need to change
+                                for n in 0...0 {
                                     // get alarm list
                                     AF.request("https://www.clien.net/service/getAlarmList?po=\(n)", method: .get).responseString { (response) in
                                         do {
                                             let messageDoc: Document = try SwiftSoup.parse(response.value!)
-                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
-                                            //dev test
-//                                            let messages: Elements = try messageDoc.select("div.list_item")
+//                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
+                                            // DEV need to change
+                                            let messages: Elements = try messageDoc.select("div.list_item")
                                             for message in messages {
                                                 var nickname = try message.select(".nickname").text()
                                                 if nickname == "" {
