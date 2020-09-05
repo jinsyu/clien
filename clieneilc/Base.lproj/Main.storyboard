@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="16097" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
+        <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="16097"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -694,10 +695,10 @@
                                 <buttonCell key="cell" type="check" title="로그인할 때 시작" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="NaK-5X-UFE">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
+                                    <connections>
+                                        <action selector="onLaunchAtLoginButtonClicked:" target="XfG-lQ-9wD" id="gO6-O8-TbJ"/>
+                                    </connections>
                                 </buttonCell>
-                                <connections>
-                                    <action selector="launchAtLoginButtonClicked:" target="XfG-lQ-9wD" id="QFv-ob-Bkl"/>
-                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AFs-ab-5jn">
                                 <rect key="frame" x="18" y="121" width="82" height="18"/>
@@ -799,6 +800,7 @@
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+                <userDefaultsController representsSharedInstance="YES" id="ZWs-HF-eGz"/>
             </objects>
             <point key="canvasLocation" x="-36.5" y="259.5"/>
         </scene>

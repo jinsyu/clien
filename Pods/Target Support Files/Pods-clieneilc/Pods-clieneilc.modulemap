@@ -1,6 +1,0 @@
-framework module Pods_clieneilc {
-  umbrella header "Pods-clieneilc-umbrella.h"
-
-  export *
-  module * { export * }
-}

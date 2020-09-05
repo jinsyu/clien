@@ -10,6 +10,7 @@ import Cocoa
 import SwiftSoup
 import Alamofire
 import UserNotifications
+import LaunchAtLogin
 
 extension PopupViewController {
     
@@ -24,7 +25,7 @@ extension PopupViewController {
 }
 
 class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
-    
+        
     @IBOutlet weak var idTextField: NSTextField!
     @IBOutlet weak var passwordTextField: NSSecureTextField!
     @IBOutlet weak var launchAtLoginButton: NSButton!
@@ -45,8 +46,11 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         NSApplication.shared.terminate(self)
     }
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        logoutButton.isEnabled = false
         
         if let id = UserDefaults.standard.string(forKey: "id") {
             idTextField.stringValue = id
@@ -62,9 +66,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
             notiTimeStepper.integerValue = Int(notiTime)
             LOOP_TIME = Double(notiTime)
         } else {
-            notiTimeTextField.stringValue = "5분 마다 알림"
-            notiTimeStepper.integerValue = 5
-            LOOP_TIME = 5.0
+            notiTimeTextField.stringValue = "1분 마다 알림"
+            notiTimeStepper.integerValue = 1
+            LOOP_TIME = 1.0
         }
         
         let autoLogin = UserDefaults.standard.bool(forKey: "autoLogin")
@@ -75,18 +79,21 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         }
         
         notiTimeStepper.action = #selector(onNotiTimeStepperChanged(_:))
-        
         autoLoginButton.action = #selector(onAutoLoginButtonClicked(_:))
-        
-        logoutButton.isEnabled = false
-        
-        // Do any additional setup after loading the view.
     }
     
     @objc func onNotiTimeStepperChanged(_ sender: NSStepper) {
         LOOP_TIME = Double(sender.integerValue)
         notiTimeTextField.stringValue = "\(String(describing: sender.integerValue))분 마다 알림"
         UserDefaults.standard.set(LOOP_TIME, forKey: "notiTime")
+    }
+    
+    @IBAction func onLaunchAtLoginButtonClicked(_ sender: NSButton) {
+        if sender.state.rawValue == 1 {
+            launchAtLoginButton.isEnabled = true
+        } else {
+            launchAtLoginButton.isEnabled = false
+        }
     }
     
     @objc func onAutoLoginButtonClicked(_ sender: NSButton) {
@@ -108,13 +115,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     }
     
     @IBAction func logoutButtonClicked(_ sender: Any) {
-        self.idTextField.isEnabled = true
-        self.passwordTextField.isEnabled = true
-        self.notiTimeStepper.isEnabled = true
-        self.launchAtLoginButton.isEnabled = true
-        self.autoLoginButton.isEnabled = true
-        self.loginButton.isEnabled = true
-        self.logoutButton.isEnabled = false
+        self.enableButtons()
         
         timer?.invalidate()
         
@@ -142,11 +143,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         }
     }
     
-    
     func userNotificationCenter(_ center: NSUserNotificationCenter, shouldPresent notification: NSUserNotification) -> Bool {
         return true
     }
-    
     
     func showNotification(title: String, subtitle: String, params: [Substring], csrf: String) {
         let notification = NSUserNotification()
@@ -159,21 +158,16 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         notification.soundName = NSUserNotificationDefaultSoundName
         NSUserNotificationCenter.default.delegate = self
         NSUserNotificationCenter.default.deliver(notification)
-        
-        getCSRF { (success, _csrf) in
-            if !success { return }
-
-            AF.request("https://www.clien.net/service/api/alarmRead/\(params[2])/\(params[3])", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseString { (response) in
-                if let error = response.error {
-                    print("alarm read error", error)
-                    return
-                }
-                print("alarmread", params)
-            }
-        }
     }
     
     func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
+        //["sold", "15324455", "R10", "28681294", "117237529"]
+        //bardCd, boardSn, alarmType, alarmSn, divFocus
+        let params = notification.userInfo!["params"] as! [String]
+        let boardName = params[0]
+        let boardSn = params[1]
+        let reCommentSn = params[4]
+        
         switch (notification.activationType) {
         case .actionButtonClicked:
             print("action button clicked")
@@ -185,16 +179,10 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
             print("none clicked")
             break
         case .contentsClicked:
+            NSWorkspace.shared.open(URL(string: "https://www.clien.net/service/board/\(boardName)/\(boardSn)")!)
             print("contents clicked")
             break
         case .replied:
-            //["sold", "15324455", "R10", "28681294", "117237529"]
-            //bardCd, boardSn, alarmType, alarmSn, divFocus
-            let params = notification.userInfo!["params"] as! [String]
-            let boardName = params[0]
-            let boardSn = params[1]
-            let reCommentSn = params[4]
-                        
             // get csrf
             AF.request("https://www.clien.net/service/board/\(boardName)/\(boardSn)", method: .get).responseString { (response) in
                 guard let html = response.value else { return }
@@ -219,14 +207,12 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                 print(error)
                                 return
                             }
-                            print("replied")
                     }
                     
                 } catch {
                     print("replying get csrf error")
                 }
             }
-            
             break
         @unknown default:
             print("notification activated unknown")
@@ -267,180 +253,161 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         return params
     }
     
-    func getCSRF(completion: @escaping (Bool, String)->Void) {
-        AF.request("https://www.clien.net", method: .get).responseString { (response) in
-            guard let html = response.value else { return }
-            do {
-                let doc: Document = try SwiftSoup.parse(html)
-                guard let logoutForm: Element = try doc.select(".form_logout").first() else {
-                    print("logoutform not found")
-                    return
-                }
-                let _csrf = try logoutForm.select("input").first()!.attr("value")
-                print(_csrf)
-                completion(true, _csrf)
-            } catch {
-                print("isloggedin error", error)
-            }
-        }
-        
-        // Get CSRF value
-//        AF.request("https://www.clien.net/service/auth/login", method: .get).responseString { (response) in
-//            if let error = response.error {
-//                print("request for getting _csrf error", error)
-//                return
-//            }
-//
-//            guard let html = response.value else { return }
-//
-//            do {
-//                let doc: Document = try SwiftSoup.parse(html)
-//                guard let loginForm: Element = try doc.select("#loginForm").first() else {
-//                    print("loginform not found")
-//                    return
-//                }
-//                let _csrf = try loginForm.select("input").first()!.attr("value")
-//                let id = self.idTextField.stringValue
-//                let password = self.passwordTextField.stringValue
-//
-//                AF.request("https://www.clien.net/service/login", method: .post, parameters: ["userId": id, "userPassword": password, "_csrf": _csrf]).responseString { (_) in
-//                    if let error = response.error {
-//                        print("login error", error)
-//                        return
-//                    }
-//
-//
-//
-//                }
-//            } catch {
-//                print("get csrf error")
-//            }
-//        }
+    func disableButtons() {
+        self.idTextField.isEnabled = false
+        self.passwordTextField.isEnabled = false
+        self.notiTimeStepper.isEnabled = false
+        self.launchAtLoginButton.isEnabled = false
+        self.autoLoginButton.isEnabled = false
+        self.loginButton.isEnabled = false
+        self.logoutButton.isEnabled = true
     }
-
+    
+    func enableButtons() {
+        self.idTextField.isEnabled = true
+        self.passwordTextField.isEnabled = true
+        self.notiTimeStepper.isEnabled = true
+        self.launchAtLoginButton.isEnabled = true
+        self.autoLoginButton.isEnabled = true
+        self.loginButton.isEnabled = true
+        self.logoutButton.isEnabled = false
+    }
     
     @objc func getAlarmList() {
-        if loginButton.title == "로그아웃" {
-            return
-        }
-        // Get CSRF value
+        disableButtons()
+        
         AF.request("https://www.clien.net/service/auth/login", method: .get).responseString { (response) in
             if let error = response.error {
-                print("request for getting _csrf error", error)
+                print("https://www.clien.net/service/auth/login get error", error)
                 return
             }
             
-            guard let html = response.value else { return }
+            guard let html = response.value else {
+                print("https://www.clien.net/service/auth/login response.value error")
+                return
+            }
             
             do {
                 let doc: Document = try SwiftSoup.parse(html)
                 guard let loginForm: Element = try doc.select("#loginForm").first() else {
-                    print("loginform not found")
+                    print("https://www.clien.net/service/auth/login loginform not found")
                     return
                 }
+                
                 let _csrf = try loginForm.select("input").first()!.attr("value")
                 let id = self.idTextField.stringValue
                 let password = self.passwordTextField.stringValue
                 
                 AF.request("https://www.clien.net/service/login", method: .post, parameters: ["userId": id, "userPassword": password, "_csrf": _csrf]).responseString { (_) in
                     if let error = response.error {
-                        print("login error", error)
-                        return
+                        print("https://www.clien.net/service/login error", error)
                     }
                     
-                    self.isLoggedIn { (isLoggedIn) in
-                        if isLoggedIn {
-                            self.idTextField.isEnabled = false
-                            self.passwordTextField.isEnabled = false
-                            self.notiTimeStepper.isEnabled = false
-                            self.launchAtLoginButton.isEnabled = false
-                            self.autoLoginButton.isEnabled = false
-                            self.loginButton.isEnabled = false
-                            self.logoutButton.isEnabled = true
+                    AF.request("https://www.clien.net", method: .get).responseString { (response) in
+                        guard let html = response.value else {
+                            print("https://www.clien.net get error")
+                            return
+                        }
+                        
+                        do {
+                            let doc: Document = try SwiftSoup.parse(html)
+                            guard let logoutForm: Element = try doc.select(".form_logout").first() else {
+                                print("logoutform not found")
+                                self.showAlert(question: "로그인 실패", text: "아이디와 비밀번호를 다시 확인해주세요")
+                                self.timer?.invalidate()
+                                self.enableButtons()
+                                return
+                            }
                             
+                            let _csrf = try logoutForm.select("input").first()!.attr("value")
                             UserDefaults.standard.set(self.idTextField.stringValue, forKey: "id")
                             UserDefaults.standard.set(self.passwordTextField.stringValue, forKey: "password")
                             
                             self.timer = Timer.scheduledTimer(withTimeInterval: self.LOOP_TIME!*60, repeats: true, block: { (timer) in
-                                // get alarm list
-                                AF.request("https://www.clien.net/service/getAlarmList", method: .get).responseString { (response) in
-                                    do {
-                                        let messageDoc: Document = try SwiftSoup.parse(response.value!)
-                                        let messages: Elements = try messageDoc.select("div.list_item.unread")
-                                        for message in messages {
-                                            
-                                            var nickname = try message.select(".nickname").text()
-                                            if nickname == "" {
-                                                nickname = try message.select(".nickname").select("img").attr("alt")
+                                
+                                for n in 0...2 {
+                                    // get alarm list
+                                    AF.request("https://www.clien.net/service/getAlarmList?po=\(n)", method: .get).responseString { (response) in
+                                        do {
+                                            let messageDoc: Document = try SwiftSoup.parse(response.value!)
+                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
+                                            //dev test
+                                            //let messages: Elements = try messageDoc.select("div.list_item")
+                                            for message in messages {
+                                                var nickname = try message.select(".nickname").text()
+                                                if nickname == "" {
+                                                    nickname = try message.select(".nickname").select("img").attr("alt")
+                                                }
+                                                
+                                                let contents = try message.select(".list_contents").text()
+                                                if contents == "관리자 알림 확인하기" {
+                                                    continue
+                                                }
+                                                let paramsRaw = try message.select(".list_contents").attr("onclick")
+                                                let params = self.getParams(paramsRaw: paramsRaw)
+                                                
+                                                let timestamp = try message.select(".timestamp").text()
+                                                
+                                                print("replies", nickname, contents, timestamp, params)
+                                                self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
+                                                // alarm read
+                                                //                                            let _ = AF.request("https://www.clien.net/service/api/alarmRead/\(params[2])/\(params[3])", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (response) in
+                                                //                                                print(response)
+                                                //                                            }
                                             }
+                                            // alarm all read
+                                            //                                        AF.request("https://www.clien.net/service/api/alarmAllRead", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (_) in
+                                            //                                            print(response, "read all alarms")
+                                            //                                        }
                                             
-                                            let contents = try message.select(".list_contents").text()
-                                            if contents == "관리자 알림 확인하기" {
-                                                continue
-                                            }
-                                            let paramsRaw = try message.select(".list_contents").attr("onclick")
-                                            let params = self.getParams(paramsRaw: paramsRaw)
-                                            
-                                            let timestamp = try message.select(".timestamp").text()
-                                            
-                                            print("replies", nickname, contents, timestamp, params)
-                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
-                                            
+                                        } catch Exception.Error(let type, let message){
+                                            print(type, message)
+                                        } catch {
+                                            print("swift souping error for getting alarm list")
                                         }
-                                        
-                                    } catch Exception.Error(let type, let message){
-                                        print(type, message)
-                                    } catch {
-                                        print("swift souping error for getting alarm list")
                                     }
                                 }
                                 
+                                
                                 // get messages
-                                AF.request("https://www.clien.net/service/message/?type=", method: .get).responseString { (response) in
-                                    do {
-                                        let messageDoc: Document = try SwiftSoup.parse(response.value!)
-                                        let messages: Elements = try messageDoc.select("div.list_item.recieved.unread")
-                                        for message in messages {
-                                            
-                                            var nickname = try message.select(".nickname").text()
-                                            if nickname == "" {
-                                                nickname = try message.select(".nickname").select("img").attr("alt")
-                                            }
-                                            
-                                            let contents = try message.select(".list_contents").text()
-                                            if contents == "관리자 알림 확인하기" {
-                                                continue
-                                            }
-                                            let paramsRaw = try message.select(".list_contents").attr("onclick")
-                                            let params = self.getParams(paramsRaw: paramsRaw)
-                                            
-                                            let timestamp = try message.select(".timestamp").text()
-                                            
-                                            print("messages", nickname, contents, timestamp)
-                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
-                                        }
-                                    } catch {
-                                        print("error get messages")
-                                    }
-                                }
+//                                AF.request("https://www.clien.net/service/message/?type=", method: .get).responseString { (response) in
+//                                    do {
+//                                        let messageDoc: Document = try SwiftSoup.parse(response.value!)
+//                                        let messages: Elements = try messageDoc.select("div.list_item.recieved.unread")
+//                                        for message in messages {
+//
+//                                            var nickname = try message.select(".nickname").text()
+//                                            if nickname == "" {
+//                                                nickname = try message.select(".nickname").select("img").attr("alt")
+//                                            }
+//
+//                                            let contents = try message.select(".list_contents").text()
+//                                            if contents == "관리자 알림 확인하기" {
+//                                                continue
+//                                            }
+//                                            let paramsRaw = try message.select(".list_contents").attr("onclick")
+//                                            let params = self.getParams(paramsRaw: paramsRaw)
+//
+//                                            let timestamp = try message.select(".timestamp").text()
+//
+//                                            print("messages", nickname, contents, timestamp)
+//                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
+//                                        }
+//                                    } catch {
+//                                        print("error get messages")
+//                                    }
+//                                }
                             })
+                            // fire first before timer works
                             self.timer?.fire()
-                        } else {
-                            self.showAlert(question: "로그인 실패", text: "아이디와 비밀번호를 다시 확인해주세요")
-                            print("can't log in")
+                        } catch {
+                            print("https://www.clien.net swiftsoup error", error)
                         }
                     }
-                    
-                    
                 }
-                
-            } catch Exception.Error(let type, let message){
-                print(type, message)
             } catch {
-                print("swift souping error for getting _csrf")
+                print("https://www.clien.net/service/auth/login swiftsoup error")
             }
         }
     }
 }
-
-

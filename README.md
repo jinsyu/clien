@@ -6,10 +6,11 @@
 - welcome to any pull request
 
 ## TODO
-- popover view disappear when logged in
-- notification alert reply for article
-- notification alert reply for message
-- fixing dirty regex on getting params of alarm and messages
+- [ ] launch at login
+- [ ] popover view disappear when logged in
+- [x] notification alert reply for article
+- [x] notification alert reply for message
+- [ ] fixing dirty regex on getting params of alarm and messages
 
 ## QUESTIONS
 - jinsyu.com@gmail.com

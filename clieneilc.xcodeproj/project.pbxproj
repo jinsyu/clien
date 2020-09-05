@@ -3,22 +3,36 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C51EC58250374A900AD7EA2 /* LaunchAtLogin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C51EC56250374A900AD7EA2 /* LaunchAtLogin.framework */; };
+		9C51EC59250374A900AD7EA2 /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C51EC57250374A900AD7EA2 /* Alamofire.framework */; };
+		9C51EC5B2503764E00AD7EA2 /* SwiftSoup.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C51EC5A2503764E00AD7EA2 /* SwiftSoup.framework */; };
 		9C56D59A24FFFFCA00CEBB70 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C56D59924FFFFCA00CEBB70 /* EventMonitor.swift */; };
 		9C9FCC2C24FEBBE10080AB99 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C9FCC2B24FEBBE10080AB99 /* AppDelegate.swift */; };
 		9C9FCC2E24FEBBE10080AB99 /* PopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C9FCC2D24FEBBE10080AB99 /* PopupViewController.swift */; };
 		9C9FCC3024FEBBE20080AB99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C9FCC2F24FEBBE20080AB99 /* Assets.xcassets */; };
 		9C9FCC3324FEBBE20080AB99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C9FCC3124FEBBE20080AB99 /* Main.storyboard */; };
-		B1ADE4B0823AB420D83511B0 /* Pods_clieneilc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24D3555ED7DF11D03911284A /* Pods_clieneilc.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		9CFB0F892502CDD300592C90 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		24D3555ED7DF11D03911284A /* Pods_clieneilc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_clieneilc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2893BB05DDACA01902A2FE0F /* Pods-clieneilc.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clieneilc.debug.xcconfig"; path = "Target Support Files/Pods-clieneilc/Pods-clieneilc.debug.xcconfig"; sourceTree = "<group>"; };
-		8EAA0E22C079842C0EBBF5A9 /* Pods-clieneilc.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-clieneilc.release.xcconfig"; path = "Target Support Files/Pods-clieneilc/Pods-clieneilc.release.xcconfig"; sourceTree = "<group>"; };
+		9C51EC56250374A900AD7EA2 /* LaunchAtLogin.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LaunchAtLogin.framework; path = Carthage/Build/Mac/LaunchAtLogin.framework; sourceTree = "<group>"; };
+		9C51EC57250374A900AD7EA2 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/Mac/Alamofire.framework; sourceTree = "<group>"; };
+		9C51EC5A2503764E00AD7EA2 /* SwiftSoup.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftSoup.framework; path = Carthage/Build/Mac/SwiftSoup.framework; sourceTree = "<group>"; };
 		9C56D59924FFFFCA00CEBB70 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
 		9C9FCC2824FEBBE10080AB99 /* clieneilc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = clieneilc.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C9FCC2B24FEBBE10080AB99 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -27,6 +41,7 @@
 		9C9FCC3224FEBBE20080AB99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C9FCC3424FEBBE20080AB99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C9FCC3524FEBBE20080AB99 /* clieneilc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = clieneilc.entitlements; sourceTree = "<group>"; };
+		9CFB0F8B2502CE2B00592C90 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,7 +49,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1ADE4B0823AB420D83511B0 /* Pods_clieneilc.framework in Frameworks */,
+				9C51EC5B2503764E00AD7EA2 /* SwiftSoup.framework in Frameworks */,
+				9C51EC58250374A900AD7EA2 /* LaunchAtLogin.framework in Frameworks */,
+				9C51EC59250374A900AD7EA2 /* Alamofire.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,8 +61,6 @@
 		1021281782E6BCD5F4E398B2 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				2893BB05DDACA01902A2FE0F /* Pods-clieneilc.debug.xcconfig */,
-				8EAA0E22C079842C0EBBF5A9 /* Pods-clieneilc.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -53,7 +68,10 @@
 		87FE20CFBA92F8C510459AB0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				24D3555ED7DF11D03911284A /* Pods_clieneilc.framework */,
+				9C51EC5A2503764E00AD7EA2 /* SwiftSoup.framework */,
+				9C51EC57250374A900AD7EA2 /* Alamofire.framework */,
+				9C51EC56250374A900AD7EA2 /* LaunchAtLogin.framework */,
+				9CFB0F8B2502CE2B00592C90 /* ServiceManagement.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -97,11 +115,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9C9FCC3824FEBBE20080AB99 /* Build configuration list for PBXNativeTarget "clieneilc" */;
 			buildPhases = (
-				BB1DDD65B9C17AE705E48732 /* [CP] Check Pods Manifest.lock */,
 				9C9FCC2424FEBBE10080AB99 /* Sources */,
 				9C9FCC2524FEBBE10080AB99 /* Frameworks */,
 				9C9FCC2624FEBBE10080AB99 /* Resources */,
-				65548ED0FB67DAD31C189954 /* [CP] Embed Pods Frameworks */,
+				9CE398382502C89500BDA3F5 /* Run Script */,
+				9CFB0F892502CDD300592C90 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -158,24 +176,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		65548ED0FB67DAD31C189954 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-clieneilc/Pods-clieneilc-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-clieneilc/Pods-clieneilc-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-clieneilc/Pods-clieneilc-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BB1DDD65B9C17AE705E48732 /* [CP] Check Pods Manifest.lock */ = {
+		9CE398382502C89500BDA3F5 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -183,19 +184,18 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				Carthage/Build/Mac/Alamofire.framework,
+				Carthage/Build/Mac/LaunchAtLogin.framework,
+				Carthage/Build/Mac/SwiftSoup.framework,
 			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "Run Script";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-clieneilc-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n/usr/local/bin/carthage copy-frameworks\n\"${PROJECT_DIR}/Carthage/Build/Mac/LaunchAtLogin.framework/Resources/copy-helper.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -339,7 +339,6 @@
 		};
 		9C9FCC3924FEBBE20080AB99 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2893BB05DDACA01902A2FE0F /* Pods-clieneilc.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = clieneilc/clieneilc.entitlements;
@@ -348,12 +347,18 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 7S99PYTX54;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = clieneilc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jinsyu.clieneilc;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = com.jinsyu.clien;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
@@ -361,7 +366,6 @@
 		};
 		9C9FCC3A24FEBBE20080AB99 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8EAA0E22C079842C0EBBF5A9 /* Pods-clieneilc.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = clieneilc/clieneilc.entitlements;
@@ -370,12 +374,18 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 7S99PYTX54;
 				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+				);
 				INFOPLIST_FILE = clieneilc/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jinsyu.clieneilc;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
+				PRODUCT_BUNDLE_IDENTIFIER = com.jinsyu.clien;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 			};
