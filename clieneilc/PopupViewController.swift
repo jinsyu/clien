@@ -355,17 +355,17 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                                 //                                                print(response)
                                                 //                                            }
                                             }
-                                            // alarm all read
-                                            //                                        AF.request("https://www.clien.net/service/api/alarmAllRead", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (_) in
-                                            //                                            print(response, "read all alarms")
-                                            //                                        }
-                                            
                                         } catch Exception.Error(let type, let message){
                                             print(type, message)
                                         } catch {
                                             print("swift souping error for getting alarm list")
                                         }
                                     }
+                                }
+                                
+                                // alarm all read
+                                AF.request("https://www.clien.net/service/api/alarmAllRead", method: .post, headers: ["X-CSRF-TOKEN": _csrf]).responseJSON { (response) in
+                                    print("alarm all read", response)
                                 }
                                 
                                 
