@@ -333,9 +333,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                     AF.request("https://www.clien.net/service/getAlarmList?po=\(n)", method: .get).responseString { (response) in
                                         do {
                                             let messageDoc: Document = try SwiftSoup.parse(response.value!)
-//                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
+                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
                                             //dev test
-                                            let messages: Elements = try messageDoc.select("div.list_item")
+//                                            let messages: Elements = try messageDoc.select("div.list_item")
                                             for message in messages {
                                                 var nickname = try message.select(".nickname").text()
                                                 if nickname == "" {
