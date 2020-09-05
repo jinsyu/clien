@@ -157,7 +157,10 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         notification.userInfo = ["params": params]
         notification.soundName = NSUserNotificationDefaultSoundName
         NSUserNotificationCenter.default.delegate = self
-        NSUserNotificationCenter.default.deliver(notification)
+        // need some time to accept notification request when it start at first
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: false, block: { (timer) in
+            NSUserNotificationCenter.default.deliver(notification)
+        })
     }
     
     func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
@@ -330,9 +333,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                     AF.request("https://www.clien.net/service/getAlarmList?po=\(n)", method: .get).responseString { (response) in
                                         do {
                                             let messageDoc: Document = try SwiftSoup.parse(response.value!)
-                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
+//                                            let messages: Elements = try messageDoc.select("div.list_item.unread")
                                             //dev test
-                                            //let messages: Elements = try messageDoc.select("div.list_item")
+                                            let messages: Elements = try messageDoc.select("div.list_item")
                                             for message in messages {
                                                 var nickname = try message.select(".nickname").text()
                                                 if nickname == "" {
@@ -392,14 +395,16 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
 //
 //                                            print("messages", nickname, contents, timestamp)
 //                                            self.showNotification(title: nickname, subtitle: contents, params: params, csrf: _csrf)
-//                                        }
-//                                    } catch {
-//                                        print("error get messages")
-//                                    }
-//                                }
+                                //                                        }
+                                //                                    } catch {
+                                //                                        print("error get messages")
+                                //                                    }
+                                //                                }
                             })
-                            // fire first before timer works
+                            
                             self.timer?.fire()
+                            
+                            
                         } catch {
                             print("https://www.clien.net swiftsoup error", error)
                         }
