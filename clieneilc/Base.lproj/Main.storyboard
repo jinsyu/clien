@@ -707,9 +707,6 @@
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
-                                <connections>
-                                    <action selector="launchAtLoginButtonClicked:" target="XfG-lQ-9wD" id="EnS-Tb-veK"/>
-                                </connections>
                             </button>
                             <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HZN-AA-8Xu">
                                 <rect key="frame" x="20" y="256" width="163" height="21"/>

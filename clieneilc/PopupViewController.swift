@@ -90,9 +90,9 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
     
     @IBAction func onLaunchAtLoginButtonClicked(_ sender: NSButton) {
         if sender.state.rawValue == 1 {
-            launchAtLoginButton.isEnabled = true
+            LaunchAtLogin.isEnabled = true
         } else {
-            launchAtLoginButton.isEnabled = false
+            LaunchAtLogin.isEnabled = false
         }
     }
     
@@ -104,10 +104,6 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         didSet {
             // Update the view, if already loaded.
         }
-    }
-    
-    @IBAction func launchAtLoginButtonClicked(_ sender: Any) {
-        UserDefaults.standard.set(launchAtLoginButton.state.rawValue, forKey: "launchAtLogin")
     }
     
     @IBAction func loginButtonClicked(_ sender: NSButton) {
