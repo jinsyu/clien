@@ -46,6 +46,15 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
         NSApplication.shared.terminate(self)
     }
     
+    override func viewDidAppear() {
+        print("viewDidAppear")
+    }
+    
+    override func viewDidDisappear() {
+        print("viewDidDisappear")
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -332,7 +341,7 @@ class PopupViewController: NSViewController, NSUserNotificationCenterDelegate {
                                             let messageDoc: Document = try SwiftSoup.parse(response.value!)
                                             let messages: Elements = try messageDoc.select("div.list_item.unread")
                                             // DEV
-                                            // let messages: Elements = try messageDoc.select("div.list_item")
+//                                             let messages: Elements = try messageDoc.select("div.list_item")
                                             for message in messages {
                                                 var nickname = try message.select(".nickname").text()
                                                 if nickname == "" {
